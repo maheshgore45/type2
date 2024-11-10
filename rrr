@@ -1,1 +1,235 @@
 codes
+
+import java.util.Scanner;
+class Fibonacci{
+    static int fibIter(int n){
+        if(n <= 1){
+            return n;
+        }
+
+        int a = 0, b = 1, fib = 1;
+        for(int i = 2; i <= n; i++){
+            fib = a + b;
+            a = b;
+            b = fib;
+        }
+        return fib;
+    }
+
+    static int fibRecur(int n){
+        if(n <= 1){
+            return n;
+        } else {
+            return fibRecur(n-1) + fibRecur(n-2);
+        }
+    }
+
+    public static void main(String[] arg){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Select the method...");
+        System.out.println("1.. Iterative ");
+        System.out.println("2.. Recurssive ");
+        System.out.print("Enter your choice : ");
+        int ch = sc.nextInt();
+        System.out.print("Enter the value of n : ");
+        int n = sc.nextInt();
+
+        switch(ch){
+            case 1: 
+                System.out.println("Fibonacci is " + fibIter(n));
+                break;
+            case 2: 
+                System.out.println("Fibonacci is " + fibRecur(n));
+                break;
+            default:
+                System.out.println("Invalid choice..");
+        }
+    }
+}
+
+
+import java.util.Scanner;
+class NQueens{
+    private int N;
+    private int[][] board;
+
+    NQueens(int n){
+        N = n;
+        board = new int[N][N];
+    }
+
+    void printBoard(){
+        for(int i = 0; i < N; i++){
+            for(int j = 0; j < N; j++){
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    boolean isSafe(int row, int col){
+        for(int i = 0; i < row; i++){
+            if(board[i][col] == 1){
+                return false;
+            }
+        }
+
+        for(int i = row, j = col; i >= 0 && j >= 0; i--, j--){
+            if(board[i][j] == 1){
+                return false;
+            }
+        }
+
+        for(int i = row, j = col; i >= 0 && j < N; i--, j++){
+            if(board[i][j] == 1){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    boolean solve(int row){
+        if(row == N){
+            printBoard();
+            return true; 
+        }
+
+        for(int col = 0; col < N; col++){
+            if(isSafe(row,col)){
+                board[row][col] = 1;
+                if(solve(row + 1)) return true;
+                board[row][col] = 0;
+            }
+        }
+        return false;
+    }  
+
+    public static void main(String[] arg){
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the no of queens to be placed : ");
+        int n = sc.nextInt();
+        NQueens queen = new NQueens(n);
+        // queen.board[0][1] = 1;
+        queen.solve(0);
+    }
+}
+
+
+
+import java.util.*;
+class Item{
+    int value, weight;
+    
+    Item(int value, int weight){
+        this.value = value;
+        this.weight =  weight;
+    }
+}
+
+class itemcomparator implements Comparator<Item>{
+    // @override
+    public int compare(Item a, Item b){
+        double r1 = (double) (a.value / a.weight);
+        double r2 = (double) (b.value / b.weight);
+        
+        if(r1 < r2){
+            return 1;
+        } else if (r1 > r2){
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+}
+
+public class solve{
+    
+    static double fractional(int W, int n, Item arr[]){
+        Arrays.sort(arr, new itemcomparator());
+        
+        int curr = 0;
+        double total = 0.0;
+        
+        for(int i = 0; i < n; i++){
+            if (curr + arr[i].weight <= W){
+                curr += arr[i].weight;
+                total += arr[i].value;
+            } else {
+                int remain = W - curr;
+                total += (double) ( arr[i].value / arr[i].weight) * (double) remain ;
+                break;
+            }
+        }
+        return total;
+    }
+    
+    public static void main(String[] args){
+        // int n = 3, weight = 50;
+        // Item arr[] = {new Item (100,20),new Item(60,10),new Item(120,30)};
+        // double ans = fractional(weight, n, arr);
+        // System.out.println("The maximum value is "+ans);
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter the no of items : ");
+        int n = sc.nextInt();
+        Item arr[] = new Item[n];
+        System.out.print("Enter the capacity : ");
+        int weight = sc.nextInt();
+        
+        for(int i = 0; i < n; i++){
+            System.out.print("Enter the value : ");
+            int val = sc.nextInt();
+            System.out.print("Enter the weight : ");
+            int wt = sc.nextInt();
+            arr[i] = new Item(val, wt);
+        }
+        System.out.println("The maximum value is : " + fractional(weight, n, arr));
+    }
+}
+
+
+import java.util.Scanner;
+
+public class Knapsack{
+    public static int knapsack(int[] weights, int[] values, int capacity){
+        int n = values.length;
+        int[][] dp = new int[n + 1][capacity + 1];
+        
+        for(int i = 1; i <= n; i++){
+            for(int w = 0; w <= capacity; w++){
+                if(weights[i - 1] <= w){
+                    dp[i][w] = Math.max(dp[i - 1][w], values[i - 1] + dp[i - 1][w - weights[i - 1]]);
+                } else {
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+        return dp[n][capacity];
+    }
+    
+    public static void main(String[] arg){
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.print("Enter the no of values: ");
+        int n = sc.nextInt();
+        
+        int[] weights = new int[n];
+        int[] values = new int[n];
+        
+        System.out.println("Enter the values.....");
+        
+        for(int i = 0; i < n; i++){
+            System.out.print("Enter the value of " + (i + 1) + " item :");
+            values[i] = sc.nextInt();
+            System.out.print("Enter the weight of " + (i + 1) + " item :");
+            weights[i] = sc.nextInt();
+        }
+        
+        System.out.print("Enter the capacity of Knapsack :");
+        int capacity = sc.nextInt();
+        
+        System.out.println("The maximum value is : " + knapsack(weights, values, capacity));
+    }
+}
